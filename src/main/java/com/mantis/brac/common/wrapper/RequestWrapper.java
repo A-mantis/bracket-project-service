@@ -1,10 +1,9 @@
 package com.mantis.brac.common.wrapper;
 
-import com.alibaba.fastjson.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StreamUtils;
 
-import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -13,12 +12,12 @@ import java.io.*;
 /**
  * @Description:
  * @author: wei.wang
- * @since: 2020/4/4 16:19
- * @history: 1.2020/4/4 created by wei.wang
+ * @since: 2020/5/26 16:19
+ * @history: 1.2020/5/26 created by wei.wang
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
 
-    private final String body;
+    private byte[] cachedBody;
 
     private static Logger logger = LoggerFactory.getLogger(RequestWrapper.class);
 
@@ -29,53 +28,22 @@ public class RequestWrapper extends HttpServletRequestWrapper {
      */
     public RequestWrapper(HttpServletRequest request) {
         super(request);
-        StringBuilder stringBuilder = new StringBuilder();
-        try (InputStream inputStream = request.getInputStream();
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, IOUtils.UTF8))) {
-            char[] charBuffer = new char[128];
-            int bytesRead = -1;
-            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                stringBuilder.append(charBuffer, 0, bytesRead);
-            }
+        try {
+            InputStream requestInputStream = request.getInputStream();
+            this.cachedBody = StreamUtils.copyToByteArray(requestInputStream);
         } catch (IOException ex) {
             logger.info("RequestWrapper error : {}", ex.getMessage());
         }
-        body = stringBuilder.toString();
-    }
-
-    /**
-     * 获取输入流
-     *
-     * @return
-     * @throws IOException
-     */
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes(IOUtils.UTF8));
-        return new ServletInputStream() {
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            public boolean isReady() {
-                return false;
-            }
-
-            @Override
-            public void setReadListener(ReadListener readListener) {
-            }
-
-            @Override
-            public int read() throws IOException {
-                return byteArrayInputStream.read();
-            }
-        };
     }
 
     @Override
-    public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(this.getInputStream(), IOUtils.UTF8));
+    public ServletInputStream getInputStream(){
+        return new ServletInputStreamCopier(this.cachedBody);
+    }
+
+    @Override
+    public BufferedReader getReader(){
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
+        return new BufferedReader(new InputStreamReader(byteArrayInputStream));
     }
 }

@@ -1,46 +1,22 @@
 package com.mantis.brac.common.exception;
 
-import com.mantis.brac.common.http.Response;
-
 /**
  * @Description:
  * @author: wei.wang
  * @since: 2020/4/4 16:50
  * @history: 1.2020/4/4 created by wei.wang
  */
-public class BracBusinessException extends RuntimeException {
+public class BracBusinessException extends BaseException {
 
-    private Response response;
+    /**
+     * 自定义异常，状态码
+     */
+    public static final int STATUS_CODE=701;
 
+    public BracBusinessException(){
+
+    }
     public BracBusinessException(String message){
         super(message);
-    }
-
-    /**
-     * 直接返回Response
-     *
-     * @param response
-     */
-    public BracBusinessException(Response response) {
-        this.response = response;
-    }
-
-    /**
-     * 自定义code和data
-     *
-     * @param code
-     * @param message
-     * @param data
-     */
-    public BracBusinessException(String code, String message, Object data) {
-        this.response = new Response(code, message, data);
-    }
-
-    public Response getResponse() {
-        return response;
-    }
-
-    public void setResponse(Response response) {
-        this.response = response;
     }
 }

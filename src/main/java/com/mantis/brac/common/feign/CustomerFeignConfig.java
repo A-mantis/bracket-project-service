@@ -1,8 +1,6 @@
 package com.mantis.brac.common.feign;
 
 import com.mantis.brac.common.exception.BracBusinessException;
-import com.mantis.brac.common.http.RequestEnum;
-import feign.Contract;
 import feign.Feign;
 import feign.Response;
 import feign.Target;
@@ -11,6 +9,7 @@ import feign.codec.Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -25,28 +24,33 @@ import java.util.Map;
  */
 @Component
 @Import(FeignClientsConfiguration.class)
-public class BracFeignConfig {
+public class CustomerFeignConfig {
 
-    private BracFeignClient bracFeignClient;
+    private CustomerFeignClient bracFeignClient;
     private String uri;
-    private RequestEnum requestType;
+    private Enum requestType;
     private Map<String, Object> header;
     private Map<String, Object> request;
 
+    /**
+     * 在构造函数中用 @Autowired 引入自定义参数和编解码器
+     *
+     * @param encoder
+     * @param decoder
+     */
     @Autowired
-    public BracFeignConfig(Encoder encoder, Decoder decoder) {
+    public CustomerFeignConfig(Encoder encoder, Decoder decoder) {
         bracFeignClient = Feign.builder().encoder(encoder).decoder(decoder)
-                .target(Target.EmptyTarget.create(BracFeignClient.class));
+                .target(Target.EmptyTarget.create(CustomerFeignClient.class));
     }
 
-    public BracFeignConfig get() {
-        this.setRequestType(RequestEnum.GET);
+    public CustomerFeignConfig get() {
+        this.setRequestType(HttpMethod.GET);
         return this;
     }
 
-    public BracFeignConfig post(Map<String, Object> request) {
-        this.setRequestType(RequestEnum.POST);
-        this.setRequest(request);
+    public CustomerFeignConfig post() {
+        this.setRequestType(HttpMethod.POST);
         return this;
     }
 
@@ -56,23 +60,20 @@ public class BracFeignConfig {
      * @return
      */
     public Response execute() {
-        switch (getRequestType()) {
-            case GET:
-                return bracFeignClient.get(findUri(getUri()), getHeader(), getRequest());
-            case POST:
-                return bracFeignClient.post(findUri(getUri()), getHeader(), getRequest());
-            default:
-                throw new BracBusinessException("请选择调用方式！");
+        if (HttpMethod.GET.equals(getRequestType())) {
+            return bracFeignClient.get(findUri(getUri()), getHeader(), getRequest());
+        } else if (HttpMethod.POST.equals(getRequestType())) {
+            return bracFeignClient.post(findUri(getUri()), getHeader(), getRequest());
         }
+        throw new BracBusinessException("请选择调用方式！");
     }
-
 
 
     public String getUri() {
         return uri;
     }
 
-    public BracFeignConfig setUri(String uri) {
+    public CustomerFeignConfig setUri(String uri) {
         if (uri == null) {
             throw new BracBusinessException("uri == null");
         } else {
@@ -85,16 +86,16 @@ public class BracFeignConfig {
         return request;
     }
 
-    public BracFeignConfig setRequest(Map<String, Object> request) {
+    public CustomerFeignConfig setRequest(Map<String, Object> request) {
         this.request = request;
         return this;
     }
 
-    public RequestEnum getRequestType() {
+    public Enum getRequestType() {
         return requestType;
     }
 
-    public void setRequestType(RequestEnum requestType) {
+    public void setRequestType(Enum requestType) {
         this.requestType = requestType;
     }
 
@@ -102,7 +103,7 @@ public class BracFeignConfig {
         return header;
     }
 
-    public BracFeignConfig setHeader(Map<String, Object> header) {
+    public CustomerFeignConfig setHeader(Map<String, Object> header) {
         this.header = header;
         return this;
     }

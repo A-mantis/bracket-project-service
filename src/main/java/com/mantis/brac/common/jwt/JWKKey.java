@@ -1,5 +1,6 @@
-package com.mantis.brac.common.utils.jwt;
+package com.mantis.brac.common.jwt;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,8 @@ import java.util.List;
  * @since: 2020/4/10 15:01
  * @history: 1.2020/4/10 created by wei.wang
  */
-public class JWKKey {
+public class JWKKey implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     String kty;
     String e;

@@ -1,13 +1,15 @@
 package com.mantis.brac.common.utils;
 
-import com.alibaba.fastjson.util.IOUtils;
-//import com.mantis.brac.aspect.WebLogAspect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 
 /**
  * @Description:
@@ -36,12 +38,31 @@ public class JsonUtil {
             do {
                 size = input.read(buf);
                 if (size > 0) {
-                    json.append(new String(buf, 0, size, IOUtils.UTF8));
+                    json.append(new String(buf, 0, size, StandardCharsets.UTF_8));
                 }
             } while (size > 0);
         } catch (IOException e) {
             logger.info("getJson {}", e.getMessage());
         }
         return json;
+    }
+
+    /**
+     * Object转换JSON格式
+     *
+     * @param object
+     * @return
+     */
+    public static String objectToJson(Object object) {
+        return Optional.ofNullable(object).map(JsonUtil::doObjectToJson).orElse("objectToJson Error : object is null");
+    }
+
+    public static String doObjectToJson(Object object) {
+        try {
+            return new ObjectMapper().writeValueAsString(object);
+        } catch (Exception e) {
+            logger.info("objectToJson Error {}", e.getMessage());
+            return "objectToJson Error";
+        }
     }
 }

@@ -17,8 +17,8 @@ import java.util.Map;
  * @since: 2020/4/10 15:10
  * @history: 1.2020/4/10 created by wei.wang
  */
-@FeignClient(name = "BracFeignClient")
-public interface BracFeignClient {
+@FeignClient(name = "CustomerFeignClient")
+public interface CustomerFeignClient {
 
     @RequestLine("GET")
     Response get(URI baseUri, @HeaderMap Map<String, Object> headerMap, @QueryMap Map<String, Object> requestMap);

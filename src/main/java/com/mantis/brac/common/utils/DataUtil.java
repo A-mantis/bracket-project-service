@@ -1,24 +1,14 @@
 package com.mantis.brac.common.utils;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.alibaba.fastjson.util.IOUtils;
-import com.mantis.brac.config.StaticProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Description:
@@ -345,109 +335,5 @@ public class DataUtil {
         return obj;
     }
 
-    /**
-     * 返回调用参数
-     *
-     * @return ReqBody
-     */
-    public static String getReqBody(HttpServletRequest request) {
-        //获取请求方法GET/POST
-        String method = request.getMethod().toUpperCase();
-        if (StaticProperties.REQUEST_POST.equals(method)) {
-            return getPostReqBody(request);
-        } else if (StaticProperties.REQUEST_GET.equals(method)) {
-            return getGetReqBody(request);
-        }
-        return "get Request Parameter Error";
-    }
 
-    /**
-     * 获取POST请求数据
-     *
-     * @param request
-     * @return 返回POST参数
-     */
-    public static String getPostReqBody(HttpServletRequest request) {
-        try (InputStream inputStream = request.getInputStream();
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, IOUtils.UTF8))) {
-            StringBuilder stringBuilder = new StringBuilder();
-            char[] charBuffer = new char[128];
-            int bytesRead = -1;
-            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                stringBuilder.append(charBuffer, 0, bytesRead);
-            }
-            return stringBuilder.toString();
-        } catch (IOException e) {
-            logger.info("Post Request Parameter Error : {}", e.getMessage());
-        }
-        return "Post Request Parameter Error";
-    }
-
-    /**
-     * 获取GET请求数据
-     *
-     * @param request
-     * @return
-     */
-    public static String getGetReqBody(HttpServletRequest request) {
-        try {
-            Enumeration<String> enumeration = request.getParameterNames();
-            Map<String, String> parameterMap = new HashMap<>(16);
-            while (enumeration.hasMoreElements()) {
-                String parameter = enumeration.nextElement();
-                parameterMap.put(parameter, request.getParameter(parameter));
-            }
-            return parameterMap.toString();
-        } catch (Exception e) {
-            logger.info("Get Request Parameter Error : {}", e.getMessage());
-        }
-        return "Get Request Parameter Error";
-    }
-
-    /**
-     * 获取request
-     * Spring对一些（如RequestContextHolder、TransactionSynchronizationManager、LocaleContextHolder等）
-     * 中非线程安全状态的bean采用ThreadLocal进行处理使之成为线程安全的状态
-     *
-     * @return
-     */
-    public static HttpServletRequest getHttpServletRequest() {
-        //获取RequestAttributes
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
-    }
-
-    /**
-     * 获取Header
-     */
-    public static Map<String, String> findRequestHeader(HttpServletRequest request) {
-        Map<String, String> requestHeaderMap = new HashMap();
-        try {
-            Enumeration<String> headNames = request.getHeaderNames();
-            logger.info("Start Print Request Parameter Header ");
-            while (headNames.hasMoreElements()) {
-                String headName = headNames.nextElement();
-                requestHeaderMap.put(headName, request.getHeader(headName));
-                logger.info(headName + ":" + request.getHeader(headName));
-            }
-        } catch (Exception ex) {
-            logger.info("Print Request Parameter Header Error: {}", ex.getMessage());
-        }
-        logger.info("End Print Request Parameter Header ");
-        return requestHeaderMap;
-    }
-
-    /**
-     * 打印请求地址
-     *
-     * @param request
-     * @return
-     */
-    public static void printRequestPath(HttpServletRequest request) {
-        try {
-            logger.info("Service Request Path : {}", request.getRequestURI());
-        } catch (Exception ex) {
-            logger.info("Get Service Request Path Error: {}", ex.getMessage());
-        }
-    }
 }
