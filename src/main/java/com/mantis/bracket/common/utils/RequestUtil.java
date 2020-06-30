@@ -60,10 +60,26 @@ public class RequestUtil {
     }
 
     /**
-     * 获取Header
+     * 获取Header，如果获取的header为空，则重新取
+     */
+    public static Map<String, String> getRequestHeader() {
+        return Optional.ofNullable(BracketSession.getHeader()).orElse(doGetRequestHeader(RequestUtil.getHttpServletRequest()));
+    }
+
+    /**
+     * 获取Header，如果获取的header为空，则重新取
      */
     public static Map<String, String> getRequestHeader(HttpServletRequest request) {
         return Optional.ofNullable(BracketSession.getHeader()).orElse(doGetRequestHeader(request));
+    }
+
+    /**
+     * 获取请求路径
+     *
+     * @return
+     */
+    public static String getRequestPath() {
+        return Optional.ofNullable(BracketSession.getUrlPath()).orElse(doGetRequestPath(RequestUtil.getHttpServletRequest()));
     }
 
     /**
@@ -87,6 +103,16 @@ public class RequestUtil {
         //设置缓存
         BracketSession.getRequestProfile().setUrlPath(urlPath);
         return urlPath;
+    }
+
+
+    /**
+     * 获取请求类型
+     *
+     * @return
+     */
+    public static HttpMethod getRequestType() {
+        return Optional.ofNullable(BracketSession.getRequestType()).orElse(doGetRequestType(RequestUtil.getHttpServletRequest()));
     }
 
 
@@ -225,19 +251,8 @@ public class RequestUtil {
         }
     }
 
-
     /**
-     * 返回请求参数
-     *
-     * @param request
-     * @return
-     */
-    public static String getRequestParam(HttpServletRequest request) {
-        return Optional.ofNullable(BracketSession.getRequestParam()).orElse(doGetRequestParam(request));
-    }
-
-    /**
-     * 返回请求参数
+     * 执行返回请求参数
      *
      * @param request
      * @return
@@ -253,6 +268,16 @@ public class RequestUtil {
      * 返回请求参数
      *
      * @param args
+     * @return
+     */
+    public static String getRequestParam(Object[] args) {
+        return Optional.ofNullable(BracketSession.getRequestParam()).orElse(doGetRequestParam(args, RequestUtil.getHttpServletRequest()));
+    }
+
+    /**
+     * 返回请求参数
+     *
+     * @param args
      * @param request
      * @return
      */
@@ -262,7 +287,7 @@ public class RequestUtil {
 
 
     /**
-     * 返回请求参数
+     * 执行返回请求参数
      *
      * @param args
      * @param request
@@ -306,13 +331,13 @@ public class RequestUtil {
     }
 
     public static void beforePrint(Object[] args) {
-        HttpServletRequest request = RequestUtil.getHttpServletRequest();
+        //数据已经缓存过，直接取缓存数据
         //打印header
-        logger.info("Service Request Header : {}", RequestUtil.getRequestHeader(request));
+        logger.info("Service Request Header : {}", RequestUtil.getRequestHeader());
         //打印请求地址
-        logger.info("Service Request Path : {}", RequestUtil.getRequestPath(request));
+        logger.info("Service Request Path : {}", RequestUtil.getRequestPath());
         //打印请求参数
-        logger.info("Service HttpServletRequest Params : {}", RequestUtil.getRequestParam(args, request));
+        logger.info("Service HttpServletRequest Params : {}", RequestUtil.getRequestParam(args));
     }
 
 

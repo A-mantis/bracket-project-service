@@ -1,37 +1,52 @@
 {
   "groups": [
     {
+      "name": "spring.bracket.aop",
+      "type": "com.mantis.bracket.common.property.AopProperties",
+      "sourceType": "com.mantis.bracket.common.property.AopProperties"
+    },
+    {
       "name": "spring.bracket.security",
-      "type": "com.mantis.bracket.common.property.BracketProperties",
-      "sourceType": "com.mantis.bracket.common.property.BracketProperties"
+      "type": "com.mantis.bracket.common.property.SecurityProperties",
+      "sourceType": "com.mantis.bracket.common.property.SecurityProperties"
     }
   ],
   "properties": [
     {
+      "name": "spring.bracket.aop.open",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.mantis.bracket.common.property.AopProperties"
+    },
+    {
+      "name": "spring.bracket.aop.pointcut",
+      "type": "java.lang.String",
+      "sourceType": "com.mantis.bracket.common.property.AopProperties"
+    },
+    {
       "name": "spring.bracket.security.authorization-header",
       "type": "java.lang.String",
-      "description": "用户身份认证header",
-      "sourceType": "com.mantis.bracket.common.property.BracketProperties",
+      "description": "默认用户身份认证header",
+      "sourceType": "com.mantis.bracket.common.property.SecurityProperties",
       "defaultValue": "uid"
     },
     {
       "name": "spring.bracket.security.mode",
       "type": "java.lang.String",
       "description": "认证模式",
-      "sourceType": "com.mantis.bracket.common.property.BracketProperties"
+      "sourceType": "com.mantis.bracket.common.property.SecurityProperties"
     },
     {
       "name": "spring.bracket.security.open",
       "type": "java.lang.Boolean",
       "description": "是否开启安全认证",
-      "sourceType": "com.mantis.bracket.common.property.BracketProperties",
+      "sourceType": "com.mantis.bracket.common.property.SecurityProperties",
       "defaultValue": false
     },
     {
       "name": "spring.bracket.security.public-key-url",
       "type": "java.lang.String",
       "description": "公钥地址",
-      "sourceType": "com.mantis.bracket.common.property.BracketProperties"
+      "sourceType": "com.mantis.bracket.common.property.SecurityProperties"
     }
   ],
   "hints": []

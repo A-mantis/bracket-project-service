@@ -22,4 +22,6 @@ public class BracketExceptionHandler {
         response.setStatus(ex.getStatusCode());
         return ExceptionResponse.error(ex.getMessage());
     }
+
+
 }

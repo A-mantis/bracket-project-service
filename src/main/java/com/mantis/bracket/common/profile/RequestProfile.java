@@ -36,11 +36,6 @@ public class RequestProfile {
      */
     private String requestParam;
 
-    /**
-     * 额外属性
-     */
-    private Map<String, Object> attributes;
-
     public UserProfile getUserProfile() {
         return userProfile;
     }
@@ -85,15 +80,6 @@ public class RequestProfile {
         return this;
     }
 
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    public RequestProfile setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "RequestProfile{" +
@@ -101,8 +87,7 @@ public class RequestProfile {
                 ", requestType=" + requestType +
                 ", urlPath='" + urlPath + '\'' +
                 ", header=" + header +
-                ", requestParam=" + requestParam +
-                ", attributes=" + attributes +
+                ", requestParam='" + requestParam + '\'' +
                 '}';
     }
 }

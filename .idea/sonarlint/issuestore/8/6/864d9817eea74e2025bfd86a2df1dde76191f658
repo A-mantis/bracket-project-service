@@ -1,0 +1,6 @@
+
+}squid:UselessImportCheck"RRemove this unused import 'com.mantis.bracket.common.property.SecurityProperties'.(˜çêÔ8ø¯„¤°.
+}squid:S3305"ZInject this field value directly into "configurableAdvisor", the only method that uses it.(÷ƒ·úÿÿÿÿ8ıæ†¤°.
+qsquid:S3305"ZInject this field value directly into "configurableAdvisor", the only method that uses it.(·‚Ê 
+zsquid:UselessImportCheck"ORemove this unused import 'org.springframework.beans.factory.annotation.Value'.(ìø›8â©ö£°.
+‹squid:UselessImportCheck	"`Remove this unused import 'org.springframework.boot.context.properties.ConfigurationProperties'.(¦Õ¸Ç8Õš‚¤°.

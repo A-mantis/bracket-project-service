@@ -1,0 +1,5 @@
+
+bsquid:UnusedPrivateMethod`"6Remove this unused private "setRequestProfile" method.(È€æ¡8ùÂ»¨°.
+Ÿsquid:S1186P"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‚“¶î8Ø‰¶¤°.
+˜squid:S11860"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ß¹¶¼
+_squid:UnusedPrivateMethodW"3Remove this unused private "setUserProfile" method.(Í‰²Â8ùÂ»¨°.

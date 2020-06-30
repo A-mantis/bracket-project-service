@@ -17,7 +17,6 @@ public class StaticProperties {
 
     public static final int INITIAL_CAPACITY = 16;
 
-
     public static final String ANONYMOUS_USER = "anonymous";
 
     public static final String ANONYMOUS_USER_NAME = "匿名用户";

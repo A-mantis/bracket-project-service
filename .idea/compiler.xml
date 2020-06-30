@@ -6,16 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="brac-project-service" />
+        <module name="bracket-project-service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="brac-project-service" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="brac-project-service" options="-parameters" />
+      <module name="bracket-project-service" options="-parameters" />
     </option>
   </component>
 </project>

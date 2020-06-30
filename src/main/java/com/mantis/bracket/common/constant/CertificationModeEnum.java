@@ -13,9 +13,9 @@ public enum CertificationModeEnum {
     PLAIN_TEXT,
 
     /**
-     * jwks模式，使用JWKS认证
+     * 使用JSON Web Key认证
      */
-    JWKS,
+    JWK,
 
     /**
      * 自定义模式

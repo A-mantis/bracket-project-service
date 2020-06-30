@@ -44,7 +44,8 @@ public class BracketSession {
     }
 
     public static UserProfile getUserProfile() {
-        return Optional.ofNullable(getRequestProfile().getUserProfile()).orElse(new UserProfile());
+        return Optional.ofNullable(getRequestProfile().getUserProfile())
+                .orElse(new UserProfile());
     }
 
 
@@ -81,11 +82,11 @@ public class BracketSession {
     }
 
     public static Map<String, Object> getAttributes() {
-        return getRequestProfile().getAttributes();
+        return getUserProfile().getAttributes();
     }
 
     public static void setAttributes(Map<String, Object> attributes) {
-        getRequestProfile().setAttributes(attributes);
+        getRequestProfile().setUserProfile(getUserProfile().setAttributes(attributes));
     }
 
     public static String getUid() {
@@ -93,7 +94,7 @@ public class BracketSession {
     }
 
     public static void setUid(String uid) {
-        getUserProfile().setUid(uid);
+        getRequestProfile().setUserProfile(getUserProfile().setUid(uid));
     }
 
     public static String getUserName() {
@@ -101,7 +102,7 @@ public class BracketSession {
     }
 
     public static void setUserName(String userName) {
-        getUserProfile().setUserName(userName);
+        getRequestProfile().setUserProfile(getUserProfile().setUserName(userName));
     }
 
     /**

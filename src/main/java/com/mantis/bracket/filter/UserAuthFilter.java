@@ -1,22 +1,27 @@
 package com.mantis.bracket.filter;
 
-import com.mantis.bracket.adapter.JwksUserProfile;
+import com.mantis.bracket.adapter.ParseUserInfo;
 import com.mantis.bracket.common.constant.CertificationModeEnum;
 import com.mantis.bracket.common.constant.StaticProperties;
 import com.mantis.bracket.common.exception.BracketBusinessException;
+import com.mantis.bracket.common.http.ExceptionResponse;
 import com.mantis.bracket.common.jwt.RsaUtil;
 import com.mantis.bracket.common.profile.RequestProfile;
-import com.mantis.bracket.common.property.BracketProperties;
+import com.mantis.bracket.common.profile.UserProfile;
+import com.mantis.bracket.common.property.AopProperties;
+import com.mantis.bracket.common.property.SecurityProperties;
+import com.mantis.bracket.common.utils.JsonUtil;
 import com.mantis.bracket.common.utils.RequestUtil;
 import com.mantis.bracket.common.wrapper.RequestWrapper;
 import com.mantis.bracket.common.wrapper.ResponseWrapper;
 import com.mantis.bracket.session.BracketSession;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,14 +36,16 @@ import java.util.Optional;
  * @history: 1.2020/4/4 created by wei.wang
  */
 @Component
-//@WebFilter(urlPatterns = "/*", filterName = "filter")
 public class UserAuthFilter implements Filter {
 
-    @Autowired
-    private BracketProperties bracketProperties;
+    private static Logger logger = LoggerFactory.getLogger(UserAuthFilter.class);
+
 
     @Autowired
-    private JwksUserProfile jwksUserProfile;
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    private ParseUserInfo parseUserInfo;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -46,38 +53,32 @@ public class UserAuthFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        BracketSession.setRequestProfile(new RequestProfile());
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
         ServletRequest requestWrapper = null;
         ResponseWrapper responseWrapper = null;
-        if (servletRequest instanceof HttpServletRequest) {
-            requestWrapper = new RequestWrapper((HttpServletRequest) servletRequest);
+        BracketSession.setRequestProfile(new RequestProfile());
+        //设置用户信息
+        setUserProfile();
+        //设置完用户信息后还是匿名用户
+        if (securityProperties.isOpen() && BracketSession.getUserProfile().isAnonymous()) {
+            unAuthorized(servletResponse);
         }
-        if (servletResponse instanceof HttpServletResponse) {
-            responseWrapper = new ResponseWrapper((HttpServletResponse) servletResponse);
+        try {
+            if (servletRequest instanceof HttpServletRequest) {
+                requestWrapper = new RequestWrapper((HttpServletRequest) servletRequest);
+            }
+            if (servletResponse instanceof HttpServletResponse) {
+                responseWrapper = new ResponseWrapper((HttpServletResponse) servletResponse);
+            }
+            if (requestWrapper != null && responseWrapper != null) {
+                filterChain.doFilter(requestWrapper, responseWrapper);
+            } else {
+                filterChain.doFilter(servletRequest, servletResponse);
+            }
+        } catch (IOException | ServletException e) {
+            e.printStackTrace();
         }
-        if (requestWrapper != null && responseWrapper != null) {
-            filterChain.doFilter(requestWrapper, responseWrapper);
-        } else {
-            filterChain.doFilter(servletRequest, servletResponse);
-        }
-        //设置请求信息
-        setRequestProfile();
-        //用户权限认证
-        authCertification();
     }
-
-    /**
-     * 设置请求属性，请求路径，请求header，请求类型
-     */
-    private void setRequestProfile() {
-        HttpServletRequest request = RequestUtil.getHttpServletRequest();
-        RequestUtil.getRequestPath(request);
-        RequestUtil.getRequestHeader(request);
-        RequestUtil.getRequestType(request);
-        RequestUtil.getRequestParam(request);
-    }
-
 
     @Override
     public void destroy() {
@@ -85,38 +86,79 @@ public class UserAuthFilter implements Filter {
     }
 
     /**
-     * 用户权限认证
+     * 设置用户信息
      */
-    private void authCertification() {
-        String mode = bracketProperties.getMode();
+    private void setUserProfile() {
+        //获取header信息
+        RequestUtil.getRequestHeader();
+        //获取用户信息
+        setAccessAttribute();
+        BracketSession.setUserProfile(parseUserInfo.parse());
+    }
+
+
+    /**
+     * 获取用户认证信息
+     */
+    private void setAccessAttribute() {
+        Map<String, Object> userProfileMap = BracketSession.getAttributes();
+        if (userProfileMap == null || userProfileMap.isEmpty()) {
+            doSetAccessAttribute();
+        }
+    }
+
+    /**
+     * 执行获取用户认证信息,并缓存
+     */
+    private void doSetAccessAttribute() {
+        String mode = securityProperties.getMode();
         Map<String, Object> attributesMap = new HashMap<>(StaticProperties.INITIAL_CAPACITY);
-        switch (CertificationModeEnum.valueOf(mode)) {
-            case PLAIN_TEXT:
-                //明文权限认证
-                attributesMap = plainTextProperty();
-                break;
-            case JWKS:
-                //JWKS权限认证
-                attributesMap = findJwtTokenProperty();
-                break;
-            case CUSTOMER:
-                //自定义权限认证
-                break;
-            default:
-                return;
+        try {
+            switch (CertificationModeEnum.valueOf(mode)) {
+                case PLAIN_TEXT:
+                    //解析明文
+                    attributesMap = parsePlainText();
+                    break;
+                case JWK:
+                    //解析JSON Web Token
+                    attributesMap = parseAccessToken();
+                    break;
+                case CUSTOMER:
+                    //自定义权限认证
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            logger.info("Access Attribute Error {}", e.toString());
         }
         //设置缓存
         BracketSession.setAttributes(attributesMap);
-        BracketSession.setUserProfile(jwksUserProfile.certification(attributesMap));
     }
+
+    /**
+     * 未授权的处理
+     *
+     * @param servletResponse
+     */
+    private void unAuthorized(ServletResponse servletResponse) {
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        try {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getOutputStream().write(JsonUtil.doObjectToJson(ExceptionResponse.error("Unauthorized")).getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * JWKS权限认证
      *
      * @return
      */
-    public Map<String, Object> findJwtTokenProperty() {
-        return RsaUtil.parseAccessToken(RsaUtil.findPublicKeyByUrl(bracketProperties.getPublicKeyUrl()), RsaUtil.findJwtToken(bracketProperties.getAuthorizationHeader()));
+    public Map<String, Object> parseAccessToken() {
+        return RsaUtil.parseAccessToken(RsaUtil.findPublicKeyByUrl(securityProperties.getPublicKeyUrl()), RsaUtil.getJwtToken(securityProperties.getAuthorizationHeader()));
     }
 
     /**
@@ -124,12 +166,13 @@ public class UserAuthFilter implements Filter {
      *
      * @return
      */
-    public Map<String, Object> plainTextProperty() {
+    public Map<String, Object> parsePlainText() {
         Map<String, Object> userProfileMap = new HashMap<>(StaticProperties.INITIAL_CAPACITY);
-        String currentUser = Optional.ofNullable(BracketSession.getHeader())
-                .map(o -> o.get(bracketProperties.getAuthorizationHeader()))
+        String currentUser = Optional.ofNullable(RequestUtil.getRequestHeader())
+                .map(o -> o.get(securityProperties.getAuthorizationHeader()))
                 .orElseThrow(() -> new BracketBusinessException("用户权限认证失败！"));
-        userProfileMap.put(bracketProperties.getAuthorizationHeader(), StringUtils.isEmpty(currentUser) ? StaticProperties.ANONYMOUS_USER : currentUser);
+        userProfileMap.put(securityProperties.getAuthorizationHeader(), StringUtils.isEmpty(currentUser) ? StaticProperties.ANONYMOUS_USER : currentUser);
         return userProfileMap;
     }
+
 }

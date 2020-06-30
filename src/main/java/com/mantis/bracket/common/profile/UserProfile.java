@@ -133,5 +133,16 @@ public class UserProfile {
         return this;
     }
 
-
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "uid='" + uid + '\'' +
+                ", userName='" + userName + '\'' +
+                ", urlPath='" + urlPath + '\'' +
+                ", header=" + header +
+                ", requestBody=" + requestBody +
+                ", attributes=" + attributes +
+                ", isAnonymous=" + isAnonymous +
+                '}';
+    }
 }

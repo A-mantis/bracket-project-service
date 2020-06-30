@@ -1,9 +1,12 @@
 package com.mantis.bracket.aspect;
 
 import com.mantis.bracket.adapter.LogAspect;
+import com.mantis.bracket.common.property.AopProperties;
+import com.mantis.bracket.common.property.SecurityProperties;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigurableAdvisorConfig {
 
-    @Value("${spring.bracket.aspect.pointcut}")
-    private String pointcut;
+    @Autowired
+    private AopProperties aopProperties;
 
     @Autowired
     private LogAspect logAspect;
@@ -25,8 +28,11 @@ public class ConfigurableAdvisorConfig {
     @Bean
     public AspectJExpressionPointcutAdvisor configurableAdvisor() {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
-        advisor.setExpression(pointcut);
-        advisor.setAdvice(new WebLogAspect(logAspect));
+//        //是否开启AOP
+//        if (aopProperties.getOpen()) {
+            advisor.setExpression(aopProperties.getPointcut());
+            advisor.setAdvice(new WebLogAspect(logAspect));
+//        }
         return advisor;
     }
 }
