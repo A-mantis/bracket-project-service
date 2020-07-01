@@ -25,4 +25,5 @@ public class StaticProperties {
 
     public static final String NULL_STR = "null";
 
+    public static final String REQUEST_ERROR_AUTH_CODE = "auth";
 }

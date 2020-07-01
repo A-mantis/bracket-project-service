@@ -2,6 +2,7 @@ package com.mantis.bracket.common.jwt;
 
 import com.mantis.bracket.aspect.WebLogAspect;
 import com.mantis.bracket.common.constant.StaticProperties;
+import com.mantis.bracket.common.exception.BracketAuthException;
 import com.mantis.bracket.common.exception.BracketBusinessException;
 import com.mantis.bracket.common.http.ExceptionResponse;
 import com.mantis.bracket.common.utils.RequestUtil;
@@ -49,7 +50,7 @@ public class RsaUtil {
         try {
             return KeyFactory.getInstance(StaticProperties.RSA).generatePublic(new RSAPublicKeySpec(modulus, exponent));
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-            throw new BracketBusinessException("获取公钥失败！");
+            throw new BracketAuthException("获取公钥失败！");
         }
     }
 
@@ -65,7 +66,7 @@ public class RsaUtil {
                     .build()
                     .parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            throw new BracketBusinessException(String.format("token异常 :%s", e.getMessage()));
+            throw new BracketAuthException(String.format("token异常 :%s", e.getMessage()));
         }
     }
 
@@ -77,6 +78,6 @@ public class RsaUtil {
     public static String getJwtToken(String authorizationHeader) {
         return Optional.ofNullable(RequestUtil.getRequestHeader())
                 .map(o -> o.get(authorizationHeader))
-                .orElseThrow(() -> new BracketBusinessException("获取JWTToken失败！"));
+                .orElseThrow(() -> new BracketAuthException("获取JWTToken失败！"));
     }
 }

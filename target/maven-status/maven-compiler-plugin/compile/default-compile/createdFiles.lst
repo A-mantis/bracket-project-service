@@ -1,0 +1,3 @@
+com\mantis\bracket\common\exception\BracketAuthException.class
+com\mantis\bracket\common\exception\BracketAopProceedException.class
+com\mantis\bracket\common\exception\BracketRuntimeException.class

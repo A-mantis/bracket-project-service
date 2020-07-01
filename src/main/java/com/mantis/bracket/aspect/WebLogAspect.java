@@ -1,6 +1,8 @@
 package com.mantis.bracket.aspect;
 
 import com.mantis.bracket.adapter.LogAspect;
+import com.mantis.bracket.common.exception.BracketAopProceedException;
+import com.mantis.bracket.common.exception.BracketAuthException;
 import com.mantis.bracket.common.exception.BracketBusinessException;
 import com.mantis.bracket.common.utils.RequestUtil;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -41,9 +43,15 @@ public class WebLogAspect implements MethodInterceptor {
         try {
             //执行
             proceedObject = invocation.proceed();
-        } catch (Throwable e) {
-            logger.error("AOP Proceed Error {}", String.valueOf(e.getCause()));
+        } catch (BracketBusinessException e) {
+            logger.error("AOP Proceed BracketBusinessException {}", String.valueOf(e.getCause()));
             throw new BracketBusinessException(e.getMessage());
+        } catch (BracketAuthException e) {
+            logger.error("AOP Proceed BracketAuthException {}", String.valueOf(e.getCause()));
+            throw new BracketAuthException(e.getMessage());
+        } catch (Throwable throwable) {
+            logger.error("AOP Proceed Throwable {}", String.valueOf(throwable.getCause()));
+            throw new BracketAopProceedException(throwable.getMessage());
         }
         //后置操作
         logAspect.afterOperate(proceedObject);

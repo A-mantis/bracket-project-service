@@ -6,22 +6,22 @@ package com.mantis.bracket.common.exception;
  * @since: 2020/4/4 16:50
  * @history: 1.2020/4/4 created by wei.wang
  */
-public class BracketBusinessException extends RuntimeException {
+public class BracketAopProceedException extends RuntimeException {
 
     /**
      * 自定义异常，状态码
      */
-    private static final int STATUS_CODE = 700;
+    private static final int STATUS_CODE = 701;
 
     public int getStatusCode() {
         return STATUS_CODE;
     }
 
-    public BracketBusinessException() {
+    public BracketAopProceedException() {
 
     }
 
-    public BracketBusinessException(String message) {
+    public BracketAopProceedException(String message) {
         super(message);
     }
 }

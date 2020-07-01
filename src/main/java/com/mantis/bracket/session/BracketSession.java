@@ -3,6 +3,7 @@ package com.mantis.bracket.session;
 import com.mantis.bracket.common.constant.StaticProperties;
 import com.mantis.bracket.common.profile.RequestProfile;
 import com.mantis.bracket.common.profile.UserProfile;
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpMethod;
 
 import java.util.Map;
@@ -19,7 +20,7 @@ public class BracketSession {
     private BracketSession() {
     }
 
-    private static ThreadLocal<RequestProfile> session = new ThreadLocal<>();
+    private static NamedThreadLocal<RequestProfile> session = new NamedThreadLocal<>("Request profile");
 
     /**
      * 获取请求信息
@@ -81,6 +82,16 @@ public class BracketSession {
         getRequestProfile().setRequestParam(requestParam);
     }
 
+
+    public static Map<String, Object> getRequestError() {
+        return getRequestProfile().getRequestError();
+    }
+
+    public static void setRequestError(Map<String, Object> requestError) {
+        getRequestProfile().setRequestError(requestError);
+    }
+
+
     public static Map<String, Object> getAttributes() {
         return getUserProfile().getAttributes();
     }
@@ -121,5 +132,24 @@ public class BracketSession {
      */
     public static String getCurrentUserName() {
         return Optional.of(getUserProfile()).map(UserProfile::getUserName).orElse(StaticProperties.ANONYMOUS_USER_NAME);
+    }
+
+    /**
+     * 是否存在请求错误
+     *
+     * @return
+     */
+    public static Boolean hasRequestError() {
+        return !getRequestError().isEmpty();
+    }
+
+
+    /**
+     * 是否存在请求身份认证错误
+     *
+     * @return
+     */
+    public static Boolean hasRequestCertificationError() {
+        return Optional.ofNullable(getRequestError()).map(o -> o.get(StaticProperties.REQUEST_ERROR_AUTH_CODE)).isPresent();
     }
 }

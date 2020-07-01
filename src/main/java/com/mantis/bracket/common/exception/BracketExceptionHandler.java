@@ -23,5 +23,18 @@ public class BracketExceptionHandler {
         return ExceptionResponse.error(ex.getMessage());
     }
 
+    @ExceptionHandler({BracketAuthException.class})
+    @ResponseBody
+    public ExceptionResponse authExceptionHandler(HttpServletResponse response, BracketAuthException ex) {
+        response.setStatus(ex.getStatusCode());
+        return ExceptionResponse.error(ex.getMessage());
+    }
+
+    @ExceptionHandler({BracketAopProceedException.class})
+    @ResponseBody
+    public ExceptionResponse throwableExceptionHandler(HttpServletResponse response, BracketAopProceedException ex) {
+        response.setStatus(ex.getStatusCode());
+        return ExceptionResponse.error(ex.getMessage());
+    }
 
 }

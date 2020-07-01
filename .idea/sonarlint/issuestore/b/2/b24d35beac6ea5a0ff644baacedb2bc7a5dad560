@@ -1,8 +1,10 @@
 
+Vsquid:S1118'":Add a private constructor to hide the implicit public one.(Ş±áàıÿÿÿÿ
+Msquid:S1068)"*Remove this unused "logger" private field.(úƒĞöùÿÿÿÿ8á¤å¯°.
+vsquid:UselessImportCheck"FRemove this unused import 'com.mantis.bracket.session.BracketSession'.(ğƒ«Êüÿÿÿÿ8ó¬ ¯°.
+^squid:UselessImportCheck".Remove this unused import 'java.util.HashMap'.(™˜”€ùÿÿÿÿ8ã·å¯°.
 xsquid:UselessImportCheck"MRemove this unused import 'com.mantis.bracket.common.http.ExceptionResponse'.(‘º¥8Ó²ş§°.
-Vsquid:S1118%":Add a private constructor to hide the implicit public one.(Ş±áàıÿÿÿÿ
-€squid:UselessImportCheck"URemove this unused import 'org.springframework.web.bind.annotation.ExceptionHandler'.(–Œ•¬8Ó²ş§°.
 msquid:UselessImportCheck"CRemove this unused import 'com.mantis.bracket.aspect.WebLogAspect'.(É¿ƒ<8»ºÂ¥°.
-nsquid:UselessImportCheck"CRemove this unused import 'javax.servlet.http.HttpServletResponse'.(Á¨ïë8Ó²ş§°.
-Msquid:S1068'"*Remove this unused "logger" private field.(úƒĞöùÿÿÿÿ8İô§°.
-squid:UselessImportCheck"QRemove this unused import 'org.springframework.web.bind.annotation.ResponseBody'.(•¶¶êøÿÿÿÿ8Ó²ş§°.
+€squid:UselessImportCheck"URemove this unused import 'org.springframework.web.bind.annotation.ExceptionHandler'.(–Œ•¬8Ó²ş§°.
+squid:UselessImportCheck"QRemove this unused import 'org.springframework.web.bind.annotation.ResponseBody'.(•¶¶êøÿÿÿÿ8Ó²ş§°.
+nsquid:UselessImportCheck"CRemove this unused import 'javax.servlet.http.HttpServletResponse'.(Á¨ïë8Ó²ş§°.

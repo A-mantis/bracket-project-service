@@ -36,6 +36,11 @@ public class RequestProfile {
      */
     private String requestParam;
 
+    /**
+     * 请求异常
+     */
+    private Map<String, Object> requestError;
+
     public UserProfile getUserProfile() {
         return userProfile;
     }
@@ -80,6 +85,14 @@ public class RequestProfile {
         return this;
     }
 
+    public Map<String, Object> getRequestError() {
+        return requestError;
+    }
+
+    public void setRequestError(Map<String, Object> requestError) {
+        this.requestError = requestError;
+    }
+
     @Override
     public String toString() {
         return "RequestProfile{" +
@@ -88,6 +101,7 @@ public class RequestProfile {
                 ", urlPath='" + urlPath + '\'' +
                 ", header=" + header +
                 ", requestParam='" + requestParam + '\'' +
+                ", requestError=" + requestError +
                 '}';
     }
 }
