@@ -1,6 +1,5 @@
 
-òsquid:S11863"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ﬂπ∂º
-üsquid:S1186T"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Çì∂Ó8ÿâ∂§∞.
-usquid:UselessImportCheck
-"JRemove this unused import 'com.mantis.bracket.common.profile.UserProfile'.(≤—‹ﬁ8åßò∞∞.
-}squid:UselessImportCheck"MRemove this unused import 'com.mantis.bracket.common.property.AopProperties'.(ÊÙÈ≤¸ˇˇˇˇ8Ô¡ü∞∞.
+üsquid:S1186\"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Çì∂Ó8ÿâ∂§∞.
+Ñsquid:UselessImportCheck"YRemove this unused import 'com.mantis.bracket.service.impl.AuthCertificationServiceImpl'.(ˆè„“8â‚ˆƒ∞.
+Hsquid:S1068""*Remove this unused "logger" private field.(ÛÁÊª8µ®óø∞.
+òsquid:S11861"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ﬂπ∂º

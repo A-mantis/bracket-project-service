@@ -19,10 +19,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigurableAdvisorConfig {
 
-    @Autowired
+    @Autowired(required = false)
     private AopProperties aopProperties;
 
-    @Autowired
+    @Autowired(required = false)
     private LogAspect logAspect;
 
     @Bean

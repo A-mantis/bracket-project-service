@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description:
@@ -39,6 +41,15 @@ public class UserAuthFilter implements Filter {
 
     private final AuthCertificationService authCertificationService;
 
+    private final static List<String> PUBLIC_ROUTE_LIST = Arrays.asList(
+            "/druid/*",
+            "/swagger-ui.html/*",
+            "/swagger-resources/*",
+            "/webjars/*",
+            "/v2/api-docs/*"
+    );
+
+
     public UserAuthFilter(SecurityProperties securityProperties, ParseUserInfo parseUserInfo, AuthCertificationService authCertificationService) {
         this.securityProperties = securityProperties;
         this.parseUserInfo = parseUserInfo;
@@ -55,22 +66,22 @@ public class UserAuthFilter implements Filter {
         ServletRequest requestWrapper = null;
         ResponseWrapper responseWrapper = null;
         BracketSession.setRequestProfile(new RequestProfile());
-
-        //加载用户身份认证信息
-        authCertificationService.loadAccessAttribute();
-        //是否存在加载身份认证信息错误
-        if (BracketSession.hasRequestCertificationError()) {
-            certificationError(servletResponse);
-            return;
+        if (urlInPublicRouteList(BracketSession.getUrlPath())) {
+            //加载用户身份认证信息
+            authCertificationService.loadAccessAttribute();
+            //是否存在加载身份认证信息错误
+            if (BracketSession.hasRequestCertificationError()) {
+                certificationError(servletResponse);
+                return;
+            }
+            //解析用户身份认证信息
+            BracketSession.setUserProfile(parseUserInfo.parse());
+            //设置完用户信息后还是匿名用户
+            if (securityProperties.isOpen() && BracketSession.getUserProfile().isAnonymous()) {
+                unAuthorized(servletResponse, "");
+                return;
+            }
         }
-        //解析用户身份认证信息
-        BracketSession.setUserProfile(parseUserInfo.parse());
-        //设置完用户信息后还是匿名用户
-        if (securityProperties.isOpen() && BracketSession.getUserProfile().isAnonymous()) {
-            unAuthorized(servletResponse, "");
-            return;
-        }
-
         try {
             if (servletRequest instanceof HttpServletRequest) {
                 requestWrapper = new RequestWrapper((HttpServletRequest) servletRequest);
@@ -118,5 +129,22 @@ public class UserAuthFilter implements Filter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 判断是否拦截
+     *
+     * @param url
+     * @return
+     */
+    private boolean urlInPublicRouteList(String url) {
+        List<String> publicRouteList = Arrays.asList(securityProperties.getPublicFilter().split(StaticProperties.SPLIT_FLAG_COMMA));
+        publicRouteList.addAll(PUBLIC_ROUTE_LIST);
+        for (String s : publicRouteList) {
+            if (url.contains(s)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -11,6 +11,8 @@ public class StaticProperties {
     private StaticProperties() {
     }
 
+    public static final String SPLIT_FLAG_COMMA = ",";
+
     public static final String RSA = "RSA";
 
     public static final String REQUEST_ERROR_MSG = "接口调用异常，请联系管理员或稍后再试！";

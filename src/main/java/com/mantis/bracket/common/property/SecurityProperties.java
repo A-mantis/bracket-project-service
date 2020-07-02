@@ -34,6 +34,11 @@ public class SecurityProperties {
      */
     private String authorizationHeader = "uid";
 
+    /**
+     *不被拦截的请求路径
+     */
+    private String publicFilter;
+
     public boolean isOpen() {
         return open;
     }
@@ -66,13 +71,22 @@ public class SecurityProperties {
         this.mode = mode;
     }
 
+    public String getPublicFilter() {
+        return publicFilter;
+    }
+
+    public void setPublicFilter(String publicFilter) {
+        this.publicFilter = publicFilter;
+    }
+
     @Override
     public String toString() {
-        return "BracketProperties{" +
+        return "SecurityProperties{" +
                 "open=" + open +
                 ", mode='" + mode + '\'' +
                 ", publicKeyUrl='" + publicKeyUrl + '\'' +
                 ", authorizationHeader='" + authorizationHeader + '\'' +
+                ", publicFilter='" + publicFilter + '\'' +
                 '}';
     }
 }
